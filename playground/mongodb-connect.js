@@ -1,12 +1,17 @@
 // const mongoClient = require('mongodb').MongoClient;
-const {MongoClient, ObjectID} = require('mongodb'); //Object deconstruction - Same as above, additionally we are setting other vars
+// const {MongoClient, ObjectID} = require('mongodb'); //Object deconstruction - Same as above, additionally we are setting other vars
+const {ObjectID} = require('mongodb'); //Object deconstruction - Same as above, additionally we are setting other vars
 
-MongoClient.connect('mongodb://localhost:27017/TodoApp', {useNewUrlParser: true }, (err, client) => {
-    if (err) {
-        return console.log('Unable to connect to the Mongodb server');
-    }
-    console.log('Successfully connected to Mongdb server');
-    const db = client.db('TodoApp');
+const {mongoose} = require('./../server/db/mongoose');
+const {Todo} = require('./../server/models/Todo');
+const {User} = require('./../server/models/User');
+
+// MongoClient.connect('mongodb://localhost:27017/TodoApp', {useNewUrlParser: true }, (err, client) => {
+//     if (err) {
+//         return console.log('Unable to connect to the Mongodb server');
+//     }
+//     console.log('Successfully connected to Mongdb server');
+//     const db = client.db('TodoApp');
 
 ///////////////////////////////////////Adding records
 
@@ -85,13 +90,63 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', {useNewUrlParser: true 
     // });
 
     // find & delete by ObjectID
-    db.collection('Todos').findOneAndDelete({_id: new ObjectID('5bc7a80bb57cedab96afd098')}).then((res) => {
-        console.log(res);
-    }, (err) => {
-        console.log('Error while deleteing', err);
-    });
-/////////////////////////////////////// Deleting records
+    // db.collection('Todos').findOneAndDelete({_id: new ObjectID('5bc7a80bb57cedab96afd098')}).then((res) => {
+    //     console.log(res);
+    // }, (err) => {
+    //     console.log('Error while deleteing', err);
+    // });
+/////////////////////////////////////// Updating records
+
+    // find & update
+    // db.collection('Todos').findOneAndUpdate({todo: "Pick up kids"}, {
+    //     $set: {completed: false}
+    // }, {
+    //     returnOriginal: false
+    // }).then((res) => {
+    //     console.log(res);
+    // }, (err) => {
+    //     console.log('Error while updating', err);
+    // });
+
+    // find & update Users
+    // db.collection('Users').findOneAndUpdate({name: "IPS"}, {
+    //     $rename: {name: "splname"},
+    //     $inc: {age: -1}
+    // }, {
+    //     returnOriginal: false
+    // }).then((res) => {
+    //     console.log(res);
+    // }, (err) => {
+    //     console.log('Error while updating', err);
+    // });
 
     // client.close();
 
-});
+//});
+
+var id = '5bca35d1301fc07d8d329984';
+
+// User.findOneAndUpdate({splname: "abcd"}, {
+//     $rename: {splname: "username"}
+// }, {
+//     returnOriginal: false
+// }).then((res) => {
+//     console.log(res);
+//     console.log(res);
+// }, (err) => {
+//     console.log('Error while updating', err);
+// });
+
+if (ObjectID.isValid(id)) {
+    User.findById(id).then((res) => {
+        if (!res) {
+            console.log("ID Not Found");
+        } else {
+            console.log("User requested by ID:\n", JSON.stringify(res, undefined, 2));
+        }
+    }).catch((e) => {
+        console.log("Error: ", e);
+    });
+} else {
+    console.log("Invalid ID provided");
+}
