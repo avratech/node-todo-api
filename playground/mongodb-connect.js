@@ -137,16 +137,16 @@ var id = '5bca35d1301fc07d8d329984';
 //     console.log('Error while updating', err);
 // });
 
-if (ObjectID.isValid(id)) {
-    User.findById(id).then((res) => {
-        if (!res) {
-            console.log("ID Not Found");
-        } else {
-            console.log("User requested by ID:\n", JSON.stringify(res, undefined, 2));
-        }
-    }).catch((e) => {
-        console.log("Error: ", e);
-    });
-} else {
-    console.log("Invalid ID provided");
-}
+// if (ObjectID.isValid(id)) {
+//     User.findById(id).then((res) => {
+//         if (!res) {
+//             console.log("ID Not Found");
+//         } else {
+//             console.log("User requested by ID:\n", JSON.stringify(res, undefined, 2));
+//         }
+//     }).catch((e) => {
+//         console.log("Error: ", e);
+//     });
+// } else {
+//     console.log("Invalid ID provided");
+// }

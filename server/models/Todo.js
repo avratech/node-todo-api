@@ -17,7 +17,7 @@ var Todo = mongoose.model('Todo', {
     },
     tobeCompletedBy: {
         type: Number,
-        default: Number((new Date()).getDay() + 1)
+        default: (new Date()).setDate(new Date().getDate()+1)
     }
 });
 

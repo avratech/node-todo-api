@@ -1,15 +1,17 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var {ObjectID} = require('mongodb');
+const config = require('./config/config');
+
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
+const {ObjectID} = require('mongodb');
 
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/Todo');
 var {User} = require('./models/User');
 
-const port = process.env.PORT || 9000;
+const port = process.env.PORT;
 
 var app = express();
-
 app.use(bodyParser.json());
 
 app.listen(port, ()=>{
@@ -47,6 +49,7 @@ app.get('/todos/:id', (req, res) => {
             if (!todo) {
                 res.status(404).send();
             } else {
+                // console.log(new Date(todo.tobeCompletedBy).toDateString());
                 res.status(200).send({todo});
             }
         }).catch((e) => {
@@ -55,6 +58,77 @@ app.get('/todos/:id', (req, res) => {
     } else {
         res.status(404).send();
     }
+});
+
+app.delete('/todos', (req, res) => {
+   Todo.deleteMany({}).then((result) => {
+       if (result.ok === 1) {
+           // res.status(200).send(`${result.n} Todos removed`);
+           res.status(200).send();
+       } else {
+           // console.log(result);
+           // res.status(400).send('Delete action incomplete!');
+           res.status(400).send();
+       }
+   }).catch((e) => {
+       // console.log(e);
+       // res.status(400).send('Error while deleting');
+       res.status(400).send();
+   });
+});
+
+app.delete('/todos/:id', (req, res) => {
+    var id = req.params.id;
+
+    if (ObjectID.isValid(id)) {
+        Todo.findByIdAndDelete(id).then((todo) => {
+            if (!todo) {
+                res.status(404).send();
+            } else {
+                // console.log(todo);
+                // res.status(200).send(`Todo removed: ${todo}`);
+                res.status(200).send({todo});
+            }
+        }).catch((e) => {
+            // console.log(e);
+            res.status(400).send();
+        });
+    } else {
+        res.status(404).send();
+    }
+
+});
+
+app.patch('/todos/:id', (req, res) => {
+    var id = req.params.id;
+    var body = _.pick(req.body, ["todotext", "completed", "tobeCompletedBy"]);
+
+    if (ObjectID.isValid(id)) {
+
+        if(_.isBoolean(body.completed) && body.completed) {
+            body.completedAt = new Date().getTime();
+        } else {
+            body.completedAt = null;
+            body.completed = false;
+        }
+
+        if (_.isString(body.tobeCompletedBy) && body.tobeCompletedBy.length > 4) {
+            body.tobeCompletedBy = new Date(body.tobeCompletedBy).getTime();
+        }
+
+        Todo.findByIdAndUpdate(id,{$set: body}, {new: true}).then((todo) => {
+            if (!todo) {
+                res.status(404).send();
+            } else {
+                res.status(200).send({todo});
+            }
+        }).catch((e) => {
+           res.status(400).send();
+        });
+    } else {
+        res.status(404).send();
+    }
+
 });
 
 // var newTodo = new Todo({
